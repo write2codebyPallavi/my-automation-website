@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>Automation Testing Site with Search, Filter, Pagination</title>
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f8f8f8;
+      color: #333;
+
+       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #007BFF;
+      box-shadow: 0 0 4px rgba(0,123,255,0.5);
+    }
+    .inline-group {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .inline-group label {
+      font-weight: normal;
+    }
+    .buttons {
+      margin-top: 25px;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-start;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007BFF;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    /* Table Styles */
+    table {
+      width: 100%;
+      max-width: 700px;
+      margin: 20px auto 10px auto;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    /* Hidden text */
+    .hidden-text {
+      display: none;
+      color: #d9534f;
+      max-width: 600px;
+      margin: 20px auto;
+      font-weight: bold;
+      text-align: center;
+    }
+    /* Pagination styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 50px 0;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pagination button {
+      background-color: #007BFF;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      font-size: 16px;
+      line-height: 38px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .pagination button:disabled,
+    .pagination button.active {
+      background-color: #0056b3;
+      cursor: default;
+    }
+    /* Filter container */
+    #filterContainer {
+      max-width: 700px;
+      margin: 20px auto 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    #searchInput, #countryFilter {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    #searchInput:focus, #countryFilter:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 4px rgba(0,123,255,0.5);
+      outline: none;
+    }
+      footer {
+      background: #e9ecef;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: auto;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.25rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+    }
+
+    header {
+      background-color: #3984e1;
+      color: white;
+      padding: 20px 40px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+
+<header>
+  <h1>Secure Automation Testing Practice</h1>
+</header>
+
+</head>
+<body>
+<br><br>
+<form id="testForm" autocomplete="off" onsubmit="return validateForm(event)">
+  
+  <a href="C:\Users\P980656\Downloads\Pallavi\LMS\index.html" class="btn-primary" aria-label="Go to Automation Testing Page">Back Home Page</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="C:\Users\P980656\Downloads\Pallavi\LMS\Automation.html" class="btn-primary" aria-label="Go to Automation Testing Page">Negivate Next Page</a>
+
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username" required minlength="3" />
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required />
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required minlength="6" />
+
+  <label for="comments">Comments:</label>
+  <textarea id="comments" name="comments" rows="4" maxlength="300" required></textarea>
+
+  <label>Gender:</label>
+  <div class="inline-group">
+    <label><input type="radio" name="gender" value="male" required /> Male</label>
+    <label><input type="radio" name="gender" value="female" /> Female</label>
+  </div>
+
+  <label>Interests:</label>
+  <div class="inline-group">
+    <label><input type="checkbox" name="interest" value="coding" /> Coding</label>
+    <label><input type="checkbox" name="interest" value="reading" /> Reading</label>
+    <label><input type="checkbox" name="interest" value="music" /> Music</label>
+  </div>
+
+  <label for="country">Country:</label>
+  <select id="country" name="country" required>
+    <option value="">--Select Country--</option>
+    <option value="india">India</option>
+    <option value="usa">USA</option>
+    <option value="uk">UK</option>
+  </select>
+
+  <label for="dob">Birth Date:</label>
+  <input type="date" id="dob" name="dob" required />
+
+  <label for="fileUpload">Upload File:</label>
+  <input
+    type="file"
+    id="fileUpload"
+    name="fileUpload"
+    accept=".pdf,.doc,.jpg,.png"
+  />
+
+  <div class="buttons">
+    <button type="submit">Submit</button>
+    <button type="reset">Reset</button>
+    <button type="button" onclick="triggerSafeAlert()">Alert</button>
+    <button type="button" onclick="addSafeDynamicText()">Add Dynamic Text</button>
+  </div>
+</form>
+
+
+
+<div id="hiddenText" class="hidden-text">
+  This is a hidden message (now shown safely)!
+</div>
+
+<div id="dynamicContainer" style="max-width: 600px; margin: 0 auto 40px auto;"></div>
+
+
+<footer>
+  &copy; 2025 Automation Practice. All rights reserved.
+</footer>
+
+<script>
+
+  // Form validation (basic example)
+  function validateForm(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const comments = document.getElementById("comments").value.trim();
+    const gender = document.querySelector('input[name="gender"]:checked');
+    const country = document.getElementById("country").value;
+    const dob = document.getElementById("dob").value;
+
+    if (username.length < 3) {
+      alert("Username must be at least 3 characters long.");
+      return false;
+    }
+    if (!email.includes("@") || !email.includes(".")) {
+      alert("Please enter a valid email.");
+      return false;
+    }
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      return false;
+    }
+    if (comments.length === 0) {
+      alert("Comments cannot be empty.");
+      return false;
+    }
+    if (!gender) {
+      alert("Please select your gender.");
+      return false;
+    }
+    if (!country) {
+      alert("Please select your country.");
+      return false;
+    }
+    if (!dob) {
+      alert("Please enter your birth date.");
+      return false;
+    }
+
+    alert("Form submitted successfully!");
+    return true;
+  }
+
+  // Safe Alert with predefined message (avoids injection)
+  function triggerSafeAlert() {
+    alert("This is a safe alert message from your script.");
+  }
+
+  // Safe dynamic text insertion (no user input)
+  function addSafeDynamicText() {
+    const container = document.getElementById("dynamicContainer");
+    const p = document.createElement("p");
+    p.textContent = "This is a safely added dynamic text without any injection risk.";
+    container.appendChild(p);
+  }
+</script>
+
+</body>
+</html>

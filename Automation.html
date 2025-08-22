@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>Dynamic Automation Testing Site</title>
+  <style>
+    /* Base styles (same as before, slightly adjusted for new elements) */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f8f8f8;
+      color: #333;
+
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+   
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    /* Filter container */
+    #filterContainer {
+      max-width: 900px;
+      margin: 20px auto 10px auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    #searchInput, #countryFilter, #rowsPerPage {
+      flex: 1;
+      min-width: 180px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    #searchInput:focus, #countryFilter:focus, #rowsPerPage:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 4px rgba(0,123,255,0.5);
+      outline: none;
+    }
+    /* Table styles */
+    table {
+      width: 100%;
+      max-width: 900px;
+      margin: 10px auto 10px auto;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    /* Pagination styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 50px 0;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pagination button {
+      background-color: #007BFF;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      font-size: 16px;
+      line-height: 38px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    .pagination button:disabled,
+    .pagination button.active {
+      background-color: #0056b3;
+      cursor: default;
+    }
+    .pagination button:hover:not(:disabled) {
+      background-color: #004080;
+    }
+    #resultsCount {
+      max-width: 900px;
+      margin: 0 auto 15px auto;
+      font-weight: 600;
+      text-align: right;
+      color: #555;
+    }
+    header {
+      background-color: #3984e1;
+      color: white;
+      padding: 20px 40px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    footer {
+      background: #e9ecef;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: auto;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.25rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <header>
+  <h1>Dynamic Automation Testing Site</h1>
+</header>
+
+</head>
+<body>
+
+<!-- Filters: Search, Country Dropdown, Rows per page -->
+<div id="filterContainer" role="region" aria-label="Filters">
+
+  <a href="C:\Users\P980656\Downloads\Pallavi\LMS\index.html" class="btn-primary" aria-label="Go to Automation Testing Page">Home Back</a>
+  
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search by name, email or country..."
+    aria-label="Search users"
+  />
+  <select id="countryFilter" aria-label="Filter by country">
+    <option value="all">All Countries</option>
+  </select>
+  <select id="rowsPerPage" aria-label="Select rows per page">
+    <option value="2">2 rows/page</option>
+    <option value="5" selected>5 rows/page</option>
+    <option value="10">10 rows/page</option>
+  </select>
+
+  <a href="C:\Users\P980656\Downloads\Pallavi\LMS\TEST1.html" class="btn-primary" aria-label="Go to Automation Testing Page">Negivate Previous Page</a>
+</div>
+
+<!-- Results count -->
+<div id="resultsCount" aria-live="polite"></div>
+
+<!-- User data table -->
+<table id="userTable" aria-label="User data table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Country</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Rows inserted by JS -->
+  </tbody>
+</table>
+
+<!-- Pagination buttons -->
+<div class="pagination" id="pagination" aria-label="Table pagination"></div>
+
+<script>
+  // Simulated dynamic data (like from an API)
+  const userData = [
+    { name: "Alice Johnson", email: "alice.johnson@example.com", country: "USA" },
+    { name: "Bob Smith", email: "bob.smith@example.com", country: "India" },
+    { name: "Carol White", email: "carol.white@example.com", country: "UK" },
+    { name: "David Brown", email: "david.brown@example.com", country: "USA" },
+    { name: "Eva Green", email: "eva.green@example.com", country: "India" },
+    { name: "Frank Moore", email: "frank.moore@example.com", country: "UK" },
+    { name: "Grace Lee", email: "grace.lee@example.com", country: "USA" },
+    { name: "Henry Taylor", email: "henry.taylor@example.com", country: "Canada" },
+    { name: "Isabel Davis", email: "isabel.davis@example.com", country: "Australia" },
+    { name: "Jack Wilson", email: "jack.wilson@example.com", country: "USA" },
+  ];
+
+  // State variables
+  let filteredData = [...userData];
+  let currentPage = 1;
+  let rowsPerPage = parseInt(document.getElementById("rowsPerPage").value);
+
+  // DOM Elements
+  const searchInput = document.getElementById("searchInput");
+  const countryFilter = document.getElementById("countryFilter");
+  const rowsPerPageSelect = document.getElementById("rowsPerPage");
+  const tableBody = document.querySelector("#userTable tbody");
+  const paginationDiv = document.getElementById("pagination");
+  const resultsCountDiv = document.getElementById("resultsCount");
+
+  // Populate country dropdown dynamically based on data
+  function populateCountryDropdown() {
+    // Extract unique countries from userData
+    const countries = [...new Set(userData.map(u => u.country))].sort();
+
+    // Clear existing options except "All Countries"
+    countryFilter.innerHTML = '<option value="all">All Countries</option>';
+
+    for (const country of countries) {
+      const option = document.createElement("option");
+      option.value = country.toLowerCase();
+      option.textContent = country;
+      countryFilter.appendChild(option);
+    }
+  }
+
+  // Filter data based on search and country filter
+  function filterData() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const countryValue = countryFilter.value;
+
+    filteredData = userData.filter(user => {
+      const matchesSearch = 
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm) ||
+        user.country.toLowerCase().includes(searchTerm);
+
+      const matchesCountry = countryValue === "all" ? true : user.country.toLowerCase() === countryValue;
+
+      return matchesSearch && matchesCountry;
+    });
+
+    currentPage = 1; // Reset page to first
+  }
+
+  // Render table rows for current page
+  function renderTable() {
+    tableBody.innerHTML = "";
+
+    if (filteredData.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.textContent = "No results found.";
+      td.colSpan = 3;
+      td.style.textAlign = "center";
+      tr.appendChild(td);
+      tableBody.appendChild(tr);
+      return;
+    }
+
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const endIdx = startIdx + rowsPerPage;
+    const pageData = filteredData.slice(startIdx, endIdx);
+
+    for (const user of pageData) {
+      const tr = document.createElement("tr");
+
+      const tdName = document.createElement("td");
+      tdName.textContent = user.name;
+      tr.appendChild(tdName);
+
+      const tdEmail = document.createElement("td");
+      tdEmail.textContent = user.email;
+      tr.appendChild(tdEmail);
+
+      const tdCountry = document.createElement("td");
+      tdCountry.textContent = user.country;
+      tr.appendChild(tdCountry);
+
+      tableBody.appendChild(tr);
+    }
+  }
+
+  // Render pagination buttons
+  function renderPagination() {
+    paginationDiv.innerHTML = "";
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    if (totalPages <= 1) return;
+
+    // Prev button
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "‹";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.setAttribute("aria-label", "Previous page");
+    prevBtn.onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updateTableAndPagination();
+      }
+    };
+    paginationDiv.appendChild(prevBtn);
+
+    // Page buttons (show all for simplicity)
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.className = i === currentPage ? "active" : "";
+      btn.disabled = i === currentPage;
+      btn.setAttribute("aria-label", `Page ${i}`);
+      btn.onclick = () => {
+        currentPage = i;
+        updateTableAndPagination();
+      };
+      paginationDiv.appendChild(btn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "›";
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.setAttribute("aria-label", "Next page");
+    nextBtn.onclick = () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        updateTableAndPagination();
+      }
+    };
+    paginationDiv.appendChild(nextBtn);
+  }
+
+  // Update results count text
+  function updateResultsCount() {
+    resultsCountDiv.textContent = `Showing ${filteredData.length} result${filteredData.length !== 1 ? 's' : ''}`;
+  }
+
+  // Main function to update table, pagination and count
+  function updateTableAndPagination() {
+    renderTable();
+    renderPagination();
+    updateResultsCount();
+  }
+
+  // Event listeners
+  searchInput.addEventListener("input", () => {
+    filterData();
+    updateTableAndPagination();
+  });
+
+  countryFilter.addEventListener("change", () => {
+    filterData();
+    updateTableAndPagination();
+  });
+
+  rowsPerPageSelect.addEventListener("change", () => {
+    rowsPerPage = parseInt(rowsPerPageSelect.value);
+    currentPage = 1;
+    updateTableAndPagination();
+  });
+
+  // Initialize page
+  function init() {
+    populateCountryDropdown();
+    filterData();
+    updateTableAndPagination();
+  }
+
+  init();
+</script>
+
+<footer>
+  &copy; 2025 Automation Practice. All rights reserved.
+</footer>
+
+</body>
+</html>
